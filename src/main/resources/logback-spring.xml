@@ -1,0 +1,48 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<configuration>
+    <springProperty name="LOG_DIR" source="logging.directory" defaultValue="/files/logs" />
+    <springProperty name="APP_FILE_NAME" source="logging.root.file.name" defaultValue="priceBlender" />
+    <springProperty name="DATA_FILE_NAME" source="logging.data.file.name" defaultValue="dataLogger" /> 
+	<springProperty name="LOG_PATTERN" source="logging.data.file.pattern" defaultValue="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %p %C{1.} [%t] %m%n" />
+	
+    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </layout>
+    </appender>
+    
+    <appender name="priceBlender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${APP_FILE_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>50</maxHistory>
+        </rollingPolicy>
+        <immediateFlush>true</immediateFlush>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${LOG_PATTERN}</Pattern>
+        </encoder>
+    </appender>
+    
+    <appender name="dataLogger" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${DATA_FILE_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/${DATA_FILE_NAME}-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>50</maxHistory>
+        </rollingPolicy>
+        <immediateFlush>true</immediateFlush>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>%m%n</Pattern>
+        </encoder>
+    </appender>
+    
+    <logger name="priceBlender.dataLogger" additivity="true">
+        <appender-ref ref="dataLogger" />
+        <appender-ref ref="Console" />
+    </logger>
+    <logger name="priceBlender.processor" additivity="true">
+        <appender-ref ref="priceBlender" />
+    </logger>
+    <root level="INFO">
+        <appender-ref ref="Console" />
+    </root>
+</configuration>
